@@ -34,8 +34,8 @@
   ([psid message]
    (send-message psid *page-access-token*))
   ([psid message page-access-token]
-   (post-api "me/messages" {:recipient {:id psid}}
-                           :message   message)))
+   (post-api "me/messages" {:recipient {:id psid}
+                            :message   message})))
 
 (defn send-sender-action
   "send Sender Action to PSID via FB Send Api, see:
@@ -43,8 +43,8 @@
   ([psid sender-action]
    (send-sender-action *page-access-token*))
   ([psid sender-action page-access-token]
-   (post-api "me/messages" {:recipient     {:id psid}}
-                           :sender_action sender-action)))
+   (post-api "me/messages" {:recipient     {:id psid}
+                            :sender_action sender-action})))
 
 (defn upload-attachment
   "uploads Attachment via FB Upload API and returns body containing :attachment_id, see:
@@ -73,9 +73,9 @@
   ([psid page-access-token]
    (let [response @(http/get (str *base-url* "/" psid)
                             {:query-params {:access_token page-access-token
-                                            :fields       "first_name,last_name,profile_pic,locale,timezone,gender"}}
-                            :headers       {"Content-Type" "application/json"}
-                            :insecure?     true)]
+                                            :fields       "first_name,last_name,profile_pic,locale,timezone,gender"}
+                             :headers       {"Content-Type" "application/json"}
+                             :insecure?     true})]
     (handle-facebook-response response))))
 
 (defn handle-webhook
@@ -87,6 +87,3 @@
       (doseq [entry (:entry data)]
         (doseq [messaging-event (:messaging entry)]
           (message-handler messaging-event))))))
-
-(defn webhook-handler [message-handler]
-  (partial handle-webhook message-handler))
