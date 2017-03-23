@@ -1,5 +1,6 @@
 (ns fb-messenger.send
   (:require
+    [clojure.data.json :as json]
     [org.httpkit.client :as http]))
 
 (def ^:dynamic *base-url* "https://graph.facebook.com/v2.6")
@@ -12,6 +13,11 @@
 (defn set-token!
   [token]
   (alter-var-root #'*page-access-token* (constantly token)))
+
+(defn- handle-facebook-response [response]
+  (if (= (:status response) 200)
+    (json/read-str (:body response) :key-fn keyword)
+    (println (str "Facebook error response " (:body response)))))
 
 (defn- post-api
   [endpoint body page-access-token]
